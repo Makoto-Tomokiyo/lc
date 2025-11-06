@@ -1,0 +1,23 @@
+# Ignore everything
+*
+
+# Except C++ files
+!*.cpp
+!*.cc
+!*.cxx
+!*.h
+!*.hpp
+!*.hxx
+
+# Except README
+!README
+!README.md
+!README.txt
+
+# Except git files
+!.gitignore
+!.gitattributes
+!.gitmodules
+
+# Don't ignore directories (needed for recursive tracking)
+!*/
