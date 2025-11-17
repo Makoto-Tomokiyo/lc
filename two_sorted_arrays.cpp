@@ -1,38 +1,35 @@
+#include <cstddef>
 #include <sys/types.h>
 #include <vector>
+#include <memory>
 
 class Solution {
 public:
     double findMedianSortedArrays(std::vector<int>& a, std::vector<int>& b) {
-      uint a_start = 0, b_start = 0;
-      uint a_end = a.size(), b_end = b.size();
 
-      struct Data {
-        std::vector<int>& arr;
-        uint start;
-        uint end;
-        uint median;
-      };
-      Data a_data{a, 0, static_cast<uint>(a.size()), 0}, b_data{b, 0, static_cast<uint>(b.size()), 0};
+      struct data {
+        int* arr;
+        size_t start;
+        size_t end;
+        double median;
 
-      auto median = [](const std::vector<int>& v) {
-        size_t n = v.size();
-        return n % 2 ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0;
+        double compute_median() {
+          return (median = (end - start) % 2 ? arr[start + (end - start) / 2] : (arr[start + (end - start) / 2 - 1] + arr[start + (end - start) / 2]) / 2.0); // NOLINT
+        }
       };
+      auto a_data = std::make_unique<struct data>(data{a.data(), 0, a.size(), 0.0});
+      auto b_data = std::make_unique<struct data>(data{b.data(), 0, b.size(), 0.0});
 
       do {
-        double ma = median(a);
-        double mb = median(b);
-        if (ma == mb) {
-          return ma;
-        } else if (ma < mb) {
-          std::swap(a_start, a_end);
-          std::swap(a, b);
-          std::swap(b_start, b_end);
+        if (a_data->compute_median() == b_data->compute_median()) {
+          return a_data->median;
+        } else if (a_data->median < b_data->median) {
+          std::swap(a_data, b_data);
         }
-      } while (a_start < a_end && b_start < b_end);
+        a_data->end = (a_data->start + a_data->end) / 2;
+        b_data->start = (b_data->start + b_data->end) / 2;
+      } while (a_data->end - a_data->start > 0 && b_data->end - b_data->start > 0);
 
-      return 0.0;
     }
   };
   
